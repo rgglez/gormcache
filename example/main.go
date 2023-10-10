@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	"log"
+	"time"
+
 	"github.com/evangwt/grc"
-	"github.com/go-redis/redis/v8"
+	redis "github.com/go-redis/redis/v8"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"time"
 )
 
 func main() {

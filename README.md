@@ -1,39 +1,60 @@
-# grc: a simple gorm cache plugin based on redis
+# gorm-cache
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/evangwt/grc)](https://goreportcard.com/report/github.com/evangwt/grc)[![GitHub release](https://img.shields.io/github/release/evangwt/grc.svg)](https://github.com/evangwt/grc/releases/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![GitHub all releases](https://img.shields.io/github/downloads/rgglez/gorm-cache/total) 
+![GitHub issues](https://img.shields.io/github/issues/rgglez/gorm-cache) 
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/rgglez/gorm-cache)
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/rgglez/gorm-cache)](https://goreportcard.com/report/github.com/rgglez/gorm-cache)
+[![GitHub release](https://img.shields.io/github/release/rgglez/gorm-cache.svg)](https://github.com/rgglez/gorm-cache/releases/)
 
 
-grc is a gorm plugin that provides a simple and flexible way to cache data using redis.
+gorm-cache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache data using redis and memcached at the moment.
+
+This fork separates the chache backend specifics to separate files in the same gormcache package, and adds the memcached backend.
 
 ## Features
 
-- Easy to use: just add grc as a gorm plugin and use gorm session options to control the cache behavior.
-- Flexible to customize: you can configure the cache prefix, ttl, and redis client according to your needs.
+- Easy to use: just add gorm-cache as a GORM plugin and use GORM session options to control the cache behavior.
+- Flexible to customize: you can configure the cache prefix, ttl, and redis or memcached client according to your needs.
 
 ## Installation
 
-To use grc, you need to have gorm and go-redis installed. You can install them using go get:
+### Dependencies:
+
+* [GORM](https://gorm.io/index.html)
 
 ```bash
 go get -u gorm.io/gorm
+```
+  
+* [redis library v8](https://github.com/redis/go-redis), or
+
+```bash
 go get -u github.com/go-redis/redis/v8
+```
+
+* [memcached library](https://github.com/bradfitz/gomemcache)
+
+```bash
+go get github.com/bradfitz/gomemcache/memcache
 ```
 
 Then you can install grc using go get:
 
 ```bash
-go get -u github.com/evangwt/grc
+go get -u github.com/rgglez/gorm-cache
 ```
 
 ## Usage
 
-To use grc, you need to create a gorm cache instance with a redis client and a cache config, and then add it as a gorm plugin. For example:
+To use gorm-cache, you need to create a gorm-cache instance with a redis or memcached client and a cache config, and then add it as a GORM plugin. For example:
 
 ```go
 package main
 
 import (
-        "github.com/evangwt/grc"
+        "github.com/rgglez/gorm-cache"
         "github.com/go-redis/redis/v8"
         "gorm.io/driver/postgres"
         "gorm.io/gorm"
@@ -51,7 +72,7 @@ func main() {
         })
 
         // create a gorm cache instance with a redis client and a cache config
-        cache := grc.NewGormCache("my_cache", grc.NewRedisClient(rdb), grc.CacheConfig{
+        cache := gormcache.NewGormCache("my_cache", gormcache.NewRedisClient(rdb), gormcache.CacheConfig{
                 TTL:    60 * time.Second,
                 Prefix: "cache:",
         })
@@ -65,33 +86,29 @@ func main() {
 }
 ```
 
-To enable or disable the cache for a query, you can use the `grc.UseCacheKey` context value with a boolean value. For example:
+To enable or disable the cache for a query, you can use the `gormcache.UseCacheKey` context value with a boolean value. For example:
 
 ```go
 // use cache with default ttl
-db.Session(&gorm.Session{Context: context.WithValue(context.Background(), grc.UseCacheKey, true)}).
+db.Session(&gorm.Session{Context: context.WithValue(context.Background(), gormcache.UseCacheKey, true)}).
                 Where("id > ?", 10).Find(&users)
 
 // do not use cache
-db.Session(&gorm.Session{Context: context.WithValue(context.Background(), grc.UseCacheKey, false)}).
+db.Session(&gorm.Session{Context: context.WithValue(context.Background(), gormcache.UseCacheKey, false)}).
                 Where("id > ?", 10).Find(&users)
 ```
 
-To set a custom ttl for a query, you can use the `grc.CacheTTLKey` context value with a time.Duration value. For example:
+To set a custom ttl for a query, you can use the `gormcache.CacheTTLKey` context value with a time.Duration value. For example:
 
 ```go
 // use cache with custom ttl
-db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), grc.UseCacheKey, true), grc.CacheTTLKey, 10*time.Second)}).
+db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), gormcache.UseCacheKey, true), gormcache.CacheTTLKey, 10*time.Second)}).
                 Where("id > ?", 5).Find(&users)
 ```
 
-For more examples and details, please refer to the [example code](https://github.com/evangwt/grc/blob/main/example/main.go).
+For more examples and details, please refer to the [example code](https://github.com/rgglez/gorm-cache/tree/main/example).
 
 ## License
 
-grc is licensed under the Apache License 2.0 License. See the [LICENSE](https://github.com/evangwt/grc/blob/main/LICENSE) file for more information.
-
-## Contribution
-
-If you have any feedback or suggestions for grc, please feel free to open an issue or a pull request on GitHub. Your contribution is welcome and appreciated.😊
+Read the [LICENSE](https://github.com/rgglez/gorm-cache/blob/main/LICENSE) file for more information.
 

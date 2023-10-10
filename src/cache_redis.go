@@ -9,18 +9,6 @@ import (
 	redis "github.com/go-redis/redis/v8"
 )
 
-// CacheClient is an interface for cache operations
-type CacheClient interface {
-	Get(ctx context.Context, key string) (interface{}, error)
-	Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error
-}
-
-// CacheConfig is a struct for cache options
-type CacheConfig struct {
-	TTL    time.Duration // cache expiration time
-	Prefix string        // cache key prefix
-}
-
 // RedisClient is a wrapper for go-redis client
 type RedisClient struct {
 	client *redis.Client

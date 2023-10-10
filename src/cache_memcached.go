@@ -3,7 +3,6 @@ package gormcache
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"time"
 
 	memcache "github.com/bradfitz/gomemcache/memcache"
@@ -28,7 +27,7 @@ func (r *MemcacheClient) Get(ctx context.Context, key string) (interface{}, erro
 		return nil, nil
 	}
 	value := data.Value
-	log.Printf("get cache %v, key: %v", value, key)
+	//log.Printf("get cache %v, key: %v", value, key)
 	return value, nil
 }
 

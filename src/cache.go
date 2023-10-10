@@ -1,6 +1,7 @@
 package gormcache
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"time"
@@ -14,6 +15,18 @@ var (
 	UseCacheKey struct{}
 	CacheTTLKey struct{}
 )
+
+// CacheClient is an interface for cache operations
+type CacheClient interface {
+	Get(ctx context.Context, key string) (interface{}, error)
+	Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error
+}
+
+// CacheConfig is a struct for cache options
+type CacheConfig struct {
+	TTL    time.Duration // cache expiration time
+	Prefix string        // cache key prefix
+}
 
 // GormCache is a cache plugin for gorm
 type GormCache struct {

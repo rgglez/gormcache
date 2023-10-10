@@ -1,4 +1,4 @@
-package grc
+package gormcache
 
 import (
 	"context"

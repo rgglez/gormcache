@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/evangwt/grc"
 	redis "github.com/go-redis/redis/v8"
+	grc "github.com/rgglez/gorm-cache"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

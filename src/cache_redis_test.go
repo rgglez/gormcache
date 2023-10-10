@@ -28,7 +28,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -51,11 +51,9 @@ func init() {
 	dbUser := os.Getenv("DB_USER")
 	dbPwd := os.Getenv("DB_PWD")
 	dbName := os.Getenv("DB_NAME")
-	goDSN := os.Getenv("GO_DSN")
-	//dsn := fmt.Sprintf("host='%v' port='%v' user='%v'  password='%v' dbname='%v' sslmode=disable", dbHost, dbPort, dbUser, dbPwd, dbName)
-	dsn := fmt.Sprintf("%v:%v@(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPwd, dbHost, dbPort, dbName)
+	dsn := fmt.Sprintf("host='%v' port='%v' user='%v'  password='%v' dbname='%v' sslmode=disable", dbHost, dbPort, dbUser, dbPwd, dbName)
 
-	db, err = gorm.Open(mysql.Open(goDSN), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -71,7 +69,7 @@ func init() {
 
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		Password: "",
+		Password: "123456",
 	})
 }
 

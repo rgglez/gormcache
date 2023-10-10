@@ -20,6 +20,8 @@ This fork separates the cache backend specifics to their own files in the same g
 
 ## Installation
 
+### Dependencies
+
 * [GORM](https://gorm.io/index.html)
 
 ```bash

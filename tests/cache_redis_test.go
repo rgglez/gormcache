@@ -26,7 +26,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	redis "github.com/go-redis/redis/v8"
+	gormcache "github.com/rgglez/gorm-cache"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -51,11 +52,10 @@ func init() {
 	dbUser := os.Getenv("DB_USER")
 	dbPwd := os.Getenv("DB_PWD")
 	dbName := os.Getenv("DB_NAME")
-	goDSN := os.Getenv("GO_DSN")
 	//dsn := fmt.Sprintf("host='%v' port='%v' user='%v'  password='%v' dbname='%v' sslmode=disable", dbHost, dbPort, dbUser, dbPwd, dbName)
 	dsn := fmt.Sprintf("%v:%v@(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPwd, dbHost, dbPort, dbName)
 
-	db, err = gorm.Open(mysql.Open(goDSN), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -79,7 +79,7 @@ func init() {
 func TestCache(t *testing.T) {
 	var err error
 
-	cache := NewGormCache("my_cache", NewRedisClient(rdb), CacheConfig{
+	cache := gormcache.NewGormCache("my_cache", gormcache.NewRedisClient(rdb), gormcache.CacheConfig{
 		TTL:    60 * time.Second,
 		Prefix: "cache:",
 	})
@@ -122,9 +122,9 @@ func TestCache(t *testing.T) {
 
 	for _, arg := range args {
 		var users []TestUser
-		ctx := context.WithValue(context.Background(), UseCacheKey, arg.UseCache)
+		ctx := context.WithValue(context.Background(), gormcache.UseCacheKey, true)
 		if arg.TTL > 0 {
-			ctx = context.WithValue(ctx, CacheTTLKey, arg.TTL)
+			ctx = context.WithValue(ctx, gormcache.CacheTTLKey, arg.TTL)
 		}
 
 		// query with cache and custom ttl
@@ -136,7 +136,7 @@ func TestCache(t *testing.T) {
 
 // BenchmarkCache benchmarks the cache plugin performance
 func BenchmarkCache(b *testing.B) {
-	cache := NewGormCache("my_cache", NewRedisClient(rdb), CacheConfig{
+	cache := gormcache.NewGormCache("my_cache", gormcache.NewRedisClient(rdb), gormcache.CacheConfig{
 		TTL:    10 * time.Second,
 		Prefix: "cache:",
 	})
@@ -147,6 +147,6 @@ func BenchmarkCache(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		db.Session(&gorm.Session{Context: context.WithValue(context.Background(), UseCacheKey, true)}).Where("id > ?", 10).Find(&users)
+		db.Session(&gorm.Session{Context: context.WithValue(context.Background(), gormcache.UseCacheKey, true)}).Where("id > ?", 10).Find(&users)
 	}
 }

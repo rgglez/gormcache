@@ -1,8 +1,8 @@
 # gorm-cache
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![GitHub all releases](https://img.shields.io/github/downloads/rgglez/gorm-cache/total) 
-![GitHub issues](https://img.shields.io/github/issues/rgglez/gorm-cache) 
+![GitHub all releases](https://img.shields.io/github/downloads/rgglez/gorm-cache/total)
+![GitHub issues](https://img.shields.io/github/issues/rgglez/gorm-cache)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/rgglez/gorm-cache)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/rgglez/gorm-cache)](https://goreportcard.com/report/github.com/rgglez/gorm-cache)
@@ -20,19 +20,19 @@ This fork separates the cache backend specifics to their own files in the same g
 
 ## Installation
 
-### Dependencies:
-
 * [GORM](https://gorm.io/index.html)
 
 ```bash
 go get -u gorm.io/gorm
 ```
-  
-* [redis library v8](https://github.com/redis/go-redis), or
+
+* [redis library v8](https://github.com/redis/go-redis)
 
 ```bash
 go get -u github.com/go-redis/redis/v8
 ```
+
+, or
 
 * [memcached library](https://github.com/bradfitz/gomemcache)
 
@@ -40,7 +40,7 @@ go get -u github.com/go-redis/redis/v8
 go get github.com/bradfitz/gomemcache/memcache
 ```
 
-Then you can install grc using go get:
+Then you can install gorm-cache using go get:
 
 ```bash
 go get -u github.com/rgglez/gorm-cache
@@ -112,3 +112,4 @@ For more examples and details, please refer to the [example code](https://github
 
 Read the [LICENSE](https://github.com/rgglez/gorm-cache/blob/main/LICENSE) file for more information.
 
+This module is based on [evangwt/grc](https://github.com/evangwt/grc).

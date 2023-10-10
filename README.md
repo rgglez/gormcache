@@ -11,7 +11,7 @@
 
 gorm-cache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache data using redis and memcached at the moment.
 
-This fork separates the chache backend specifics to separate files in the same gormcache package, and adds the memcached backend.
+This fork separates the chache backend specifics to their own files in the same gormcache package, and adds the memcached backend.
 
 ## Features
 

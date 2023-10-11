@@ -1,4 +1,4 @@
-module gormcache
+module github.com/rgglez/gormcache
 
 go 1.21.2
 

@@ -1,5 +1,4 @@
-/*
-   Copyright 2023 evangwt
+/*   
    Copyright 2023 Rodolfo González González for the modifications in
    this fork.
 

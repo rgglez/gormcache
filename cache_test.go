@@ -28,7 +28,7 @@ import (
 
 	memcache "github.com/bradfitz/gomemcache/memcache"
 	redis "github.com/go-redis/redis/v8"
-	gormcache "github.com/rgglez/gorm-cache"
+	gormcache "github.com/rgglez/gormcache"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

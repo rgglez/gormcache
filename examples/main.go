@@ -24,7 +24,7 @@ import (
 	"time"
 
 	redis "github.com/go-redis/redis/v8"
-	grc "github.com/rgglez/gorm-cache"
+	gormcache "github.com/rgglez/gormcache"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -55,7 +55,7 @@ func main() {
 		Password: "123456",
 	})
 
-	cache := grc.NewGormCache("my_cache", grc.NewRedisClient(rdb), grc.CacheConfig{
+	cache := gormcache.NewGormCache("my_cache", gormcache.NewRedisClient(rdb), gormcache.CacheConfig{
 		TTL:    60 * time.Second,
 		Prefix: "cache:",
 	})
@@ -72,23 +72,23 @@ func main() {
 		}
 	*/
 
-	db.Session(&gorm.Session{Context: context.WithValue(context.Background(), grc.UseCacheKey, true)}).
+	db.Session(&gorm.Session{Context: context.WithValue(context.Background(), gormcache.UseCacheKey, true)}).
 		Where("id > ?", 10).Find(&users) // use cache with default ttl
 	log.Printf("users: %#v", users)
 
-	db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), grc.UseCacheKey, true), grc.CacheTTLKey, 10*time.Second)}).
+	db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), gormcache.UseCacheKey, true), gormcache.CacheTTLKey, 10*time.Second)}).
 		Where("id > ?", 5).Find(&users) // use cache with custom ttl
 	log.Printf("users: %#v", users)
 
-	db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), grc.UseCacheKey, true), grc.CacheTTLKey, 20*time.Second)}).
+	db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), gormcache.UseCacheKey, true), gormcache.CacheTTLKey, 20*time.Second)}).
 		Where("id > ?", 5).Find(&users) // use cache with custom ttl
 	log.Printf("users: %#v", users)
 
-	db.Session(&gorm.Session{Context: context.WithValue(context.Background(), grc.UseCacheKey, false)}).
+	db.Session(&gorm.Session{Context: context.WithValue(context.Background(), gormcache.UseCacheKey, false)}).
 		Where("id > ?", 10).Find(&users) // do not use cache
 	log.Printf("users: %#v", users)
 
-	db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), grc.UseCacheKey, true), grc.CacheTTLKey, 10*time.Second)}).
+	db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), gormcache.UseCacheKey, true), gormcache.CacheTTLKey, 10*time.Second)}).
 		Where("id > ?", 10).Find(&users) // use cache with custom ttl
 	log.Printf("users: %#v", users)
 }

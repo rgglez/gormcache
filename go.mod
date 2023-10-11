@@ -1,4 +1,4 @@
-module gormcache-test
+module gormcache
 
 go 1.21.2
 
@@ -20,8 +20,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rgglez/gorm-cache v0.0.1
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/rgglez/gorm-cache => ../src

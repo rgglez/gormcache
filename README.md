@@ -1,15 +1,15 @@
-# gorm-cache
+# gormcache
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![GitHub all releases](https://img.shields.io/github/downloads/rgglez/gorm-cache/total)
-![GitHub issues](https://img.shields.io/github/issues/rgglez/gorm-cache)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/y/rgglez/gorm-cache)
+![GitHub all releases](https://img.shields.io/github/downloads/rgglez/gormcache/total)
+![GitHub issues](https://img.shields.io/github/issues/rgglez/gormcache)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/rgglez/gormcache)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/rgglez/gorm-cache)](https://goreportcard.com/report/github.com/rgglez/gorm-cache)
-[![GitHub release](https://img.shields.io/github/release/rgglez/gorm-cache.svg)](https://github.com/rgglez/gorm-cache/releases/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rgglez/gormcache)](https://goreportcard.com/report/github.com/rgglez/gormcache)
+[![GitHub release](https://img.shields.io/github/release/rgglez/gormcache.svg)](https://github.com/rgglez/gormcache/releases/)
 
 
-gorm-cache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache data using redis and memcached at the moment.
+gormcache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache data using redis and memcached at the moment.
 
 This fork separates the cache backend specifics to their own files in the same gormcache package, and adds the memcached backend.
 
@@ -45,7 +45,7 @@ go get github.com/bradfitz/gomemcache/memcache
 Then you can install gorm-cache using go get:
 
 ```bash
-go get -u github.com/rgglez/gorm-cache
+go get -u github.com/rgglez/gormcache
 ```
 
 ## Usage
@@ -56,7 +56,7 @@ To use gorm-cache, you need to create a gorm-cache instance with a redis or memc
 package main
 
 import (
-        "github.com/rgglez/gorm-cache"
+        "github.com/rgglez/gormcache"
         "github.com/go-redis/redis/v8"
         "gorm.io/driver/postgres"
         "gorm.io/gorm"
@@ -108,10 +108,10 @@ db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Ba
                 Where("id > ?", 5).Find(&users)
 ```
 
-For more examples and details, please refer to the [example code](https://github.com/rgglez/gorm-cache/tree/main/example).
+For more examples and details, please refer to the [example code](https://github.com/rgglez/gormcache/tree/main/example).
 
 ## License
 
-Read the [LICENSE](https://github.com/rgglez/gorm-cache/blob/main/LICENSE) file for more information.
+Read the [LICENSE](https://github.com/rgglez/gormcache/blob/main/LICENSE) file for more information.
 
 This module is based on [evangwt/grc](https://github.com/evangwt/grc).

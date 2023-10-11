@@ -9,7 +9,8 @@
 [![GitHub release](https://img.shields.io/github/release/rgglez/gormcache.svg)](https://github.com/rgglez/gormcache/releases/)
 
 
-gormcache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache data using BoltDB, redis and memcached at the moment.
+gormcache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache 
+data using BoltDB, redis or memcached at the moment (other backends may be included in the future).
 
 This fork separates the cache backend specifics to their own files in the same gormcache package, and adds the memcached and BoltDB backends.
 

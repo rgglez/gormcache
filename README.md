@@ -15,7 +15,7 @@ This fork separates the cache backend specifics to their own files in the same g
 
 ## Features
 
-- Easy to use: just add gorm-cache as a GORM plugin and use GORM session options to control the cache behavior.
+- Easy to use: just add gormcache as a GORM plugin and use GORM session options to control the cache behavior.
 - Flexible to customize: you can configure the cache prefix, ttl, and redis or memcached client according to your needs.
 
 ## Installation
@@ -50,7 +50,7 @@ go get -u github.com/go-redis/redis/v8
 go get github.com/bradfitz/gomemcache/memcache
 ```
 
-Then you can install gorm-cache using go get:
+Then you can install gormcache using go get:
 
 ```bash
 go get -u github.com/rgglez/gormcache
@@ -58,7 +58,7 @@ go get -u github.com/rgglez/gormcache
 
 ## Usage
 
-To use gorm-cache, you need to create a gorm-cache instance with a BoltDB, redis or memcached client and a cache config, and then add it as a GORM plugin. For example:
+To use gormcache, you need to create a gormcache instance with a BoltDB, redis or memcached client and a cache config, and then add it as a GORM plugin. For example:
 
 ```go
 package main

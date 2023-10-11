@@ -17,7 +17,7 @@ This fork separates the cache backend specifics to their own files in the same g
 ## Features
 
 - Easy to use: just add gormcache as a GORM plugin and use GORM session options to control the cache behavior.
-- Flexible to customize: you can configure the cache prefix, ttl, and redis or memcached client according to your needs.
+- Flexible to customize: you can configure the cache prefix, ttl, and backend client according to your needs.
 
 ## Installation
 

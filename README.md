@@ -9,7 +9,7 @@
 [![GitHub release](https://img.shields.io/github/release/rgglez/gormcache.svg)](https://github.com/rgglez/gormcache/releases/)
 
 
-gormcache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache data using redis and memcached at the moment.
+gormcache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache data using BoltDB, redis and memcached at the moment.
 
 This fork separates the cache backend specifics to their own files in the same gormcache package, and adds the memcached backend.
 
@@ -36,6 +36,14 @@ go get -u github.com/go-redis/redis/v8
 
 , or
 
+* [BoltDB](https://github.com/etcd-io/bbolt)
+
+ ```bash
+ go get go.etcd.io/bbolt@latest
+ ```
+
+, or
+
 * [memcached library](https://github.com/bradfitz/gomemcache)
 
 ```bash
@@ -50,7 +58,7 @@ go get -u github.com/rgglez/gormcache
 
 ## Usage
 
-To use gorm-cache, you need to create a gorm-cache instance with a redis or memcached client and a cache config, and then add it as a GORM plugin. For example:
+To use gorm-cache, you need to create a gorm-cache instance with a BoltDB, redis or memcached client and a cache config, and then add it as a GORM plugin. For example:
 
 ```go
 package main
@@ -66,6 +74,30 @@ func main() {
         // connect to postgres database
         dsn := "host='0.0.0.0' port='5432' user='evan' dbname='cache_test' password='' sslmode=disable TimeZone=Asia/Shanghai"
         db, _ := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	/*
+        mdb := memcache.New(fmt.Sprint(cfg["MEMCACHED"].(map[string]interface{})["ENDPOINT"]))
+
+        cache := gormcache.NewGormCache("my_cache", gormcache.NewMemcacheClient(mdb), gormcache.CacheConfig{
+                TTL:    600 * time.Second,
+                Prefix: "cache:",
+        })
+	*/
+
+	/*
+        bdb, err := bolt.Open("/tmp/cache.db", 0600, nil)
+	if err != nil {
+		log.Fatalf("could not open db, %v", err)
+	}
+	defer bdb.Close()
+	bdb.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte("DB"))
+		if err != nil {
+			log.Fatalf("could not create root bucket: %v", err)
+		}
+		return nil
+	})
+        */
 
         // connect to redis database
         rdb := redis.NewClient(&redis.Options{

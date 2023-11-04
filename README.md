@@ -4,7 +4,6 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/rgglez/gormcache/total)
 ![GitHub issues](https://img.shields.io/github/issues/rgglez/gormcache)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/rgglez/gormcache)
-
 [![Go Report Card](https://goreportcard.com/badge/github.com/rgglez/gormcache)](https://goreportcard.com/report/github.com/rgglez/gormcache)
 [![GitHub release](https://img.shields.io/github/release/rgglez/gormcache.svg)](https://github.com/rgglez/gormcache/releases/)
 

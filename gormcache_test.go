@@ -120,6 +120,8 @@ func init() {
 	mdb = memcache.New("127.0.0.1:11211")
 }
 
+//-----------------------------------------------------------------------------
+
 // TestRedisCache tests the cache plugin functionality
 func TestRedisCache(t *testing.T) {
 	var err error
@@ -281,6 +283,7 @@ func TestBoltDBCache(t *testing.T) {
 		log.Fatalf("could not open db, %v", err)
 	}
 	defer bdb.Close()
+
 	bdb.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte("DB"))
 		if err != nil {

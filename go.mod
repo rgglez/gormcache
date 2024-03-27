@@ -4,16 +4,17 @@ go 1.21.3
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/stretchr/testify v1.8.4
-	gorm.io/driver/mysql v1.5.2
-	gorm.io/driver/postgres v1.5.4
-	gorm.io/gorm v1.25.6
+	github.com/stretchr/testify v1.9.0
+	gorm.io/driver/mysql v1.5.6
+	gorm.io/driver/postgres v1.5.7
+	gorm.io/gorm v1.25.8
 
 )
 
 require (
 	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874
-	go.etcd.io/bbolt v1.3.8
+	github.com/redis/go-redis/v9 v9.5.1
+	go.etcd.io/bbolt v1.3.9
 )
 
 require (

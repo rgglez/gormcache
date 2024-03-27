@@ -27,7 +27,7 @@ import (
 	"time"
 
 	memcache "github.com/bradfitz/gomemcache/memcache"
-	redis "github.com/go-redis/redis/v8"
+	redis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	bolt "go.etcd.io/bbolt"
 	"gorm.io/driver/mysql"

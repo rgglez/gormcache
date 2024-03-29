@@ -22,6 +22,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"reflect"
 	"time"
 
 	"gorm.io/gorm/callbacks"
@@ -132,6 +133,18 @@ func (g *GormCache) enableCache(db *gorm.DB) bool {
 	return true
 }
 
+func isArrayOrSlice(m reflect.Value) bool {
+	rt := reflect.TypeOf(m)
+	switch rt.Kind() {
+	case reflect.Slice:
+		return true
+	case reflect.Array:
+		return true
+	default:
+		return false
+	}
+}
+
 func (g *GormCache) loadCache(db *gorm.DB, key string) (bool, error) {
 	value, err := g.client.Get(db.Statement.Context, key)
 	if err != nil {
@@ -146,7 +159,12 @@ func (g *GormCache) loadCache(db *gorm.DB, key string) (bool, error) {
 	if err = json.Unmarshal(value.([]byte), &db.Statement.Dest); err != nil {
 		return false, err
 	}
-	db.RowsAffected = int64(db.Statement.ReflectValue.Len())
+	if isArrayOrSlice(db.Statement.ReflectValue) {
+		db.RowsAffected = int64(db.Statement.ReflectValue.Len())
+	} else {
+		db.RowsAffected = int64(1)
+	}
+
 	return true, nil
 }
 

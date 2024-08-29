@@ -144,6 +144,6 @@ For more examples and details, please refer to the [example code](https://github
 
 ## License
 
-Read the [LICENSE](https://github.com/rgglez/gormcache/blob/main/LICENSE) file for more information.
+Apache-2.0 license, read the [LICENSE](https://github.com/rgglez/gormcache/blob/main/LICENSE) file for more information.
 
 This module is based on [evangwt/grc](https://github.com/evangwt/grc).

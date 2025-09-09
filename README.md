@@ -6,7 +6,8 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/rgglez/gormcache)
 [![Go Report Card](https://goreportcard.com/badge/github.com/rgglez/gormcache)](https://goreportcard.com/report/github.com/rgglez/gormcache)
 [![GitHub release](https://img.shields.io/github/release/rgglez/gormcache.svg)](https://github.com/rgglez/gormcache/releases/)
-
+![GitHub stars](https://img.shields.io/github/stars/rgglez/gormcache?style=social)
+![GitHub forks](https://img.shields.io/github/forks/rgglez/gormcache?style=social)
 
 gormcache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache 
 data using BoltDB, redis or memcached at the moment (other backends may be included in the future).

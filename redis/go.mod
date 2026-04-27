@@ -4,7 +4,7 @@ go 1.21.3
 
 require (
 	github.com/redis/go-redis/v9 v9.5.1
-	github.com/rgglez/gormcache v0.0.15
+	github.com/rgglez/gormcache v0.0.16
 	github.com/stretchr/testify v1.9.0
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/gorm v1.25.10

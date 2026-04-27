@@ -9,142 +9,318 @@
 ![GitHub stars](https://img.shields.io/github/stars/rgglez/gormcache?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/rgglez/gormcache?style=social)
 
-gormcache is a fork of the [evangwt/grc](https://github.com/evangwt/grc) [GORM](https://gorm.io/index.html) plugin that provides a way to cache 
-data using BoltDB, redis or memcached at the moment (other backends may be included in the future).
+gormcache is a [GORM](https://gorm.io/index.html) plugin that caches query results using Redis, BoltDB, or Memcached as backend. It is a fork of [evangwt/grc](https://github.com/evangwt/grc) with added backends and a monorepo structure for independent versioning.
 
-This fork separates the cache backend specifics to their own files in the same gormcache package, and adds the memcached and BoltDB backends.
+## Repository structure
+
+This is a Go monorepo. Each backend is a separate module with its own versioning:
+
+| Module | Import path | Latest |
+|--------|-------------|--------|
+| Core plugin | `github.com/rgglez/gormcache` | `v0.0.16` |
+| Redis backend | `github.com/rgglez/gormcache/redis` | `v0.1.0` |
+| BoltDB backend | `github.com/rgglez/gormcache/bbolt` | `v0.1.0` |
+| Memcached backend | `github.com/rgglez/gormcache/memcached` | `v0.1.0` |
+
+The core module defines the `CacheClient` interface and the `GormCache` plugin. Backend modules are optional — only install the one you need.
 
 ## Features
 
-- Easy to use: just add gormcache as a GORM plugin and use GORM session options to control the cache behavior.
-- Flexible to customize: you can configure the cache prefix, ttl, and backend client according to your needs.
+- Easy to use: add gormcache as a GORM plugin, control caching per query via context values.
+- Flexible: configure prefix, TTL, and backend independently.
+- Modular: only import the backend you need — no unused dependencies.
 
 ## Installation
 
-### Dependencies
+Always install the core plus one backend:
 
-* [GORM](https://gorm.io/index.html)
+### Redis
 
 ```bash
-go get -u gorm.io/gorm
+go get github.com/rgglez/gormcache@latest
+go get github.com/rgglez/gormcache/redis@latest
 ```
 
-* [redis library v8](https://github.com/redis/go-redis)
+### BoltDB
 
 ```bash
-go get -u github.com/go-redis/redis/v8
+go get github.com/rgglez/gormcache@latest
+go get github.com/rgglez/gormcache/bbolt@latest
 ```
 
-, or
-
-* [BoltDB](https://github.com/etcd-io/bbolt)
-
- ```bash
- go get go.etcd.io/bbolt@latest
- ```
-
-, or
-
-* [memcached library](https://github.com/bradfitz/gomemcache)
+### Memcached
 
 ```bash
-go get github.com/bradfitz/gomemcache/memcache
-```
-
-Then you can install gormcache using go get:
-
-```bash
-go get -u github.com/rgglez/gormcache
+go get github.com/rgglez/gormcache@latest
+go get github.com/rgglez/gormcache/memcached@latest
 ```
 
 ## Usage
 
-To use gormcache, you need to create a gormcache instance with a BoltDB, redis or memcached client and a cache config, and then add it as a GORM plugin. For example:
+### Redis
 
 ```go
 package main
 
 import (
-        "github.com/rgglez/gormcache"
-        "github.com/go-redis/redis/v8"
-        "gorm.io/driver/postgres"
-        "gorm.io/gorm"
+    "context"
+    "log"
+    "time"
+
+    redis "github.com/redis/go-redis/v9"
+    gormcache "github.com/rgglez/gormcache"
+    gormcacheredis "github.com/rgglez/gormcache/redis"
+    "gorm.io/driver/postgres"
+    "gorm.io/gorm"
 )
 
 func main() {
-        // connect to postgres database
-        dsn := "host='0.0.0.0' port='5432' user='evan' dbname='cache_test' password='' sslmode=disable TimeZone=Asia/Shanghai"
-        db, _ := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+    db, _ := gorm.Open(postgres.Open("...dsn..."), &gorm.Config{})
 
-	/*
-        mdb := memcache.New(fmt.Sprint(cfg["MEMCACHED"].(map[string]interface{})["ENDPOINT"]))
+    rdb := redis.NewClient(&redis.Options{
+        Addr:     "localhost:6379",
+        Password: "",
+    })
 
-        cache := gormcache.NewGormCache("my_cache", gormcache.NewMemcacheClient(mdb), gormcache.CacheConfig{
-                TTL:    600 * time.Second,
-                Prefix: "cache:",
-        })
-	*/
+    cache := gormcache.NewGormCache("my_cache", gormcacheredis.NewRedisClient(rdb), gormcache.CacheConfig{
+        TTL:    60 * time.Second,
+        Prefix: "cache:",
+    })
+    if err := db.Use(cache); err != nil {
+        log.Fatal(err)
+    }
 
-	/*
-        bdb, err := bolt.Open("/tmp/cache.db", 0600, nil)
-	if err != nil {
-		log.Fatalf("could not open db, %v", err)
-	}
-	defer bdb.Close()
-	bdb.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte("DB"))
-		if err != nil {
-			log.Fatalf("could not create root bucket: %v", err)
-		}
-		return nil
-	})
-        */
-
-        // connect to redis database
-        rdb := redis.NewClient(&redis.Options{
-                Addr:     "0.0.0.0:6379",
-                Password: "123456",
-        })
-
-        // create a gorm cache instance with a redis client and a cache config
-        cache := gormcache.NewGormCache("my_cache", gormcache.NewRedisClient(rdb), gormcache.CacheConfig{
-                TTL:    60 * time.Second,
-                Prefix: "cache:",
-        })
-
-        // add the gorm cache instance as a gorm plugin
-        if err := db.Use(cache); err != nil {
-                log.Fatal(err)
-        }
-
-        // now you can use gorm session options to control the cache behavior
+    var users []User
+    ctx := context.WithValue(context.Background(), gormcache.UseCacheKey, true)
+    db.Session(&gorm.Session{Context: ctx}).Where("id > ?", 10).Find(&users)
 }
 ```
 
-To enable or disable the cache for a query, you can use the `gormcache.UseCacheKey` context value with a boolean value. For example:
+### BoltDB
 
 ```go
-// use cache with default ttl
-db.Session(&gorm.Session{Context: context.WithValue(context.Background(), gormcache.UseCacheKey, true)}).
-                Where("id > ?", 10).Find(&users)
+package main
 
-// do not use cache
-db.Session(&gorm.Session{Context: context.WithValue(context.Background(), gormcache.UseCacheKey, false)}).
-                Where("id > ?", 10).Find(&users)
+import (
+    "context"
+    "log"
+    "time"
+
+    bolt "go.etcd.io/bbolt"
+    gormcache "github.com/rgglez/gormcache"
+    gormcachebbolt "github.com/rgglez/gormcache/bbolt"
+    "gorm.io/driver/mysql"
+    "gorm.io/gorm"
+)
+
+func main() {
+    db, _ := gorm.Open(mysql.Open("...dsn..."), &gorm.Config{})
+
+    bdb, err := bolt.Open("/tmp/cache.db", 0600, nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer bdb.Close()
+    bdb.Update(func(tx *bolt.Tx) error {
+        _, err := tx.CreateBucketIfNotExists([]byte("DB"))
+        return err
+    })
+
+    cache := gormcache.NewGormCache("my_cache", gormcachebbolt.NewBboltClient(bdb), gormcache.CacheConfig{
+        TTL:    60 * time.Second,
+        Prefix: "cache:",
+    })
+    if err := db.Use(cache); err != nil {
+        log.Fatal(err)
+    }
+
+    var users []User
+    ctx := context.WithValue(context.Background(), gormcache.UseCacheKey, true)
+    db.Session(&gorm.Session{Context: ctx}).Where("id > ?", 10).Find(&users)
+}
 ```
 
-To set a custom ttl for a query, you can use the `gormcache.CacheTTLKey` context value with a time.Duration value. For example:
+> **Note:** BoltDB has no native TTL support. Entries persist until the database file is deleted or you implement manual eviction.
+
+### Memcached
 
 ```go
-// use cache with custom ttl
-db.Session(&gorm.Session{Context: context.WithValue(context.WithValue(context.Background(), gormcache.UseCacheKey, true), gormcache.CacheTTLKey, 10*time.Second)}).
-                Where("id > ?", 5).Find(&users)
+package main
+
+import (
+    "context"
+    "log"
+    "time"
+
+    memcache "github.com/bradfitz/gomemcache/memcache"
+    gormcache "github.com/rgglez/gormcache"
+    gormcachememcached "github.com/rgglez/gormcache/memcached"
+    "gorm.io/driver/mysql"
+    "gorm.io/gorm"
+)
+
+func main() {
+    db, _ := gorm.Open(mysql.Open("...dsn..."), &gorm.Config{})
+
+    mdb := memcache.New("127.0.0.1:11211")
+
+    cache := gormcache.NewGormCache("my_cache", gormcachememcached.NewMemcacheClient(mdb), gormcache.CacheConfig{
+        TTL:    60 * time.Second,
+        Prefix: "cache:",
+    })
+    if err := db.Use(cache); err != nil {
+        log.Fatal(err)
+    }
+
+    var users []User
+    ctx := context.WithValue(context.Background(), gormcache.UseCacheKey, true)
+    db.Session(&gorm.Session{Context: ctx}).Where("id > ?", 10).Find(&users)
+}
 ```
 
-For more examples and details, please refer to the [example code](https://github.com/rgglez/gormcache/tree/main/example).
+## Controlling cache per query
+
+Enable or disable caching and set a custom TTL via context values:
+
+```go
+// Use cache with default TTL (from CacheConfig)
+ctx := context.WithValue(context.Background(), gormcache.UseCacheKey, true)
+db.Session(&gorm.Session{Context: ctx}).Where("id > ?", 10).Find(&users)
+
+// Use cache with custom TTL
+ctx := context.WithValue(
+    context.WithValue(context.Background(), gormcache.UseCacheKey, true),
+    gormcache.CacheTTLKey, 10*time.Second,
+)
+db.Session(&gorm.Session{Context: ctx}).Where("id > ?", 5).Find(&users)
+
+// Bypass cache
+ctx := context.WithValue(context.Background(), gormcache.UseCacheKey, false)
+db.Session(&gorm.Session{Context: ctx}).Where("id > ?", 10).Find(&users)
+```
+
+## Migration guide from v0.0.15
+
+Starting with `v0.0.16`, backend clients are in separate modules. The core API is unchanged.
+
+### 1. Install the new backend module
+
+```bash
+# Choose the backend you were using
+go get github.com/rgglez/gormcache/redis@latest
+# or: go get github.com/rgglez/gormcache/bbolt@latest
+# or: go get github.com/rgglez/gormcache/memcached@latest
+```
+
+### 2. Add the backend import
+
+**Before:**
+```go
+import gormcache "github.com/rgglez/gormcache"
+```
+
+**After (Redis example):**
+```go
+import (
+    gormcache      "github.com/rgglez/gormcache"
+    gormcacheredis "github.com/rgglez/gormcache/redis"
+)
+```
+
+### 3. Update constructor calls
+
+The constructors moved to the backend packages. The function signatures are identical.
+
+| Before | After |
+|--------|-------|
+| `gormcache.NewRedisClient(rdb)` | `gormcacheredis.NewRedisClient(rdb)` |
+| `gormcache.NewBboltClient(bdb)` | `gormcachebbolt.NewBboltClient(bdb)` |
+| `gormcache.NewMemcacheClient(mdb)` | `gormcachememcached.NewMemcacheClient(mdb)` |
+
+`NewGormCache`, `CacheConfig`, `UseCacheKey`, `CacheTTLKey` — all remain in `github.com/rgglez/gormcache` and are **unchanged**.
+
+### 4. Update the Redis client library (if using Redis)
+
+The old example used `github.com/go-redis/redis/v8`. The Redis backend now uses `github.com/redis/go-redis/v9`. The API is nearly identical; the main difference is the import path:
+
+```bash
+go get github.com/redis/go-redis/v9
+```
+
+```go
+// Before
+import redis "github.com/go-redis/redis/v8"
+
+// After
+import redis "github.com/redis/go-redis/v9"
+```
+
+### Complete before/after example
+
+**Before (v0.0.15):**
+```go
+import (
+    gormcache "github.com/rgglez/gormcache"
+    redis "github.com/go-redis/redis/v8"
+)
+
+rdb := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+cache := gormcache.NewGormCache("my_cache", gormcache.NewRedisClient(rdb), gormcache.CacheConfig{
+    TTL:    60 * time.Second,
+    Prefix: "cache:",
+})
+```
+
+**After (v0.0.16+):**
+```go
+import (
+    gormcache      "github.com/rgglez/gormcache"
+    gormcacheredis "github.com/rgglez/gormcache/redis"
+    redis          "github.com/redis/go-redis/v9"
+)
+
+rdb := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+cache := gormcache.NewGormCache("my_cache", gormcacheredis.NewRedisClient(rdb), gormcache.CacheConfig{
+    TTL:    60 * time.Second,
+    Prefix: "cache:",
+})
+```
+
+## Makefile
+
+A `Makefile` is included for common monorepo tasks. Run `make help` to see all targets.
+
+### Tagging
+
+`VERSION` is required for all tag targets.
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| `tag-core` | `make tag-core VERSION=v0.0.17` | Tag the core module |
+| `tag-redis` | `make tag-redis VERSION=v0.1.1` | Tag the Redis plugin (creates `redis/v0.1.1`) |
+| `tag-bbolt` | `make tag-bbolt VERSION=v0.1.1` | Tag the BoltDB plugin |
+| `tag-memcached` | `make tag-memcached VERSION=v0.1.1` | Tag the Memcached plugin |
+| `tag-plugins` | `make tag-plugins VERSION=v0.1.1` | Tag all three plugins with the same version |
+| `push-tags` | `make push-tags` | Push all local tags to origin |
+
+### Dependency management
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| `update-core` | `make update-core VERSION=v0.0.17` | Run `go get core@VERSION` in each plugin module |
+| `tidy` | `make tidy` | Run `go mod tidy` in all modules |
+
+### Verification
+
+| Rule | Description |
+|------|-------------|
+| `build` | `go build ./...` in all modules |
+| `vet` | `go vet ./...` in all modules |
+| `test` | `go test ./...` in all modules |
+| `versions` | Show the latest tag for each module |
 
 ## License
 
-Apache-2.0 license, read the [LICENSE](https://github.com/rgglez/gormcache/blob/main/LICENSE) file for more information.
+Apache-2.0 license. See [LICENSE](https://github.com/rgglez/gormcache/blob/main/LICENSE).
 
 This module is based on [evangwt/grc](https://github.com/evangwt/grc).

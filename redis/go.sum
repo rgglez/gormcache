@@ -22,6 +22,8 @@ github.com/redis/go-redis/v9 v9.5.1 h1:H1X4D3yHPaYrkL5X06Wh6xNVM/pX0Ft4RV0vMGvLB
 github.com/redis/go-redis/v9 v9.5.1/go.mod h1:hdY0cQFCN4fnSYT6TkisLufl/4W5UIXyv0b/CLO2V2M=
 github.com/rgglez/gormcache v0.0.15 h1:Zo93ZQ3/IH9Un9mmh3dub0165q1LrVUiO8N+zDWyV04=
 github.com/rgglez/gormcache v0.0.15/go.mod h1:a1INomLvQDkJF92A3i9bMVinnlWUyo/2/KxZedSL5kk=
+github.com/rgglez/gormcache v0.0.16 h1:ybr5lrYLkIANCYiwu9qsh+IyDINN1/Dw6Ejs9cf1A48=
+github.com/rgglez/gormcache v0.0.16/go.mod h1:LP1YDqWgwnTg7NyDzH+sohVS6ltpgn752ejRDzyEJg0=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 go.etcd.io/bbolt v1.3.9 h1:8x7aARPEXiXbHmtUwAIv7eV2fQFHrLLavdiJ3uzJXoI=

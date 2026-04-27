@@ -3,7 +3,7 @@ module github.com/rgglez/gormcache/bbolt
 go 1.21.3
 
 require (
-	github.com/rgglez/gormcache v0.0.15
+	github.com/rgglez/gormcache v0.0.16
 	github.com/stretchr/testify v1.9.0
 	go.etcd.io/bbolt v1.3.9
 	gorm.io/driver/mysql v1.5.6

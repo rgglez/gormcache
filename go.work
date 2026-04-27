@@ -1,8 +1,8 @@
-go 1.21.3
+go 1.25.9
 
 use (
 	.
-	./redis
 	./bbolt
 	./memcached
+	./redis
 )

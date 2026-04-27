@@ -23,8 +23,9 @@ import (
 	"log"
 	"time"
 
-	redis "github.com/go-redis/redis/v8"
+	redis "github.com/redis/go-redis/v9"
 	gormcache "github.com/rgglez/gormcache"
+	gormcacheredis "github.com/rgglez/gormcache/redis"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -55,7 +56,7 @@ func main() {
 		Password: "123456",
 	})
 
-	cache := gormcache.NewGormCache("my_cache", gormcache.NewRedisClient(rdb), gormcache.CacheConfig{
+	cache := gormcache.NewGormCache("my_cache", gormcacheredis.NewRedisClient(rdb), gormcache.CacheConfig{
 		TTL:    60 * time.Second,
 		Prefix: "cache:",
 	})

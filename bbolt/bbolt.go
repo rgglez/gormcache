@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-package gormcache
+package gormcachebbolt
 
 import (
 	"context"
